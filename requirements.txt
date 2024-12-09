@@ -1,1 +1,6 @@
 streamlit
+crewai
+llama-index
+faiss-cpu
+llama-parse
+transformers
