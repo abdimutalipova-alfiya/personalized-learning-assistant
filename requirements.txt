@@ -1,6 +1,7 @@
 streamlit
 crewai
 transformers
+sentence-transformers
 torch
 faiss-cpu
 PyPDF2
