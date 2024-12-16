@@ -21,22 +21,6 @@ class VoiceInputHandler:
             self.stt_model = None
             self.stt_processor = None
 
-    def record_audio(self, duration=5, sample_rate=16000):
-        """
-        Record audio from microphone with automatic endpointing.
-        """
-        st.info(f"🎤 Recording audio for {duration} seconds. Speak now...")
-        
-        recording = sd.rec(
-            int(duration * sample_rate), 
-            samplerate=sample_rate, 
-            channels=1, 
-            dtype='float64'
-        )
-        sd.wait()
-        
-        return recording.flatten()
-
     def transcribe_audio(self, audio_data, sample_rate=16000):
         """
         Transcribe audio using multiple methods for robustness.
@@ -76,16 +60,13 @@ class VoiceInputHandler:
         st.error("Speech-to-Text transcription unsuccessful.")
         return ""
 
-    def process_voice_query(self):
+    def process_voice_query(self, audio_data):
         """
         Record, transcribe, and process voice query in one step.
         
         Args:
             query_answering_function (callable): Function to answer the transcribed query
         """
-        # Record audio
-        audio_data = self.record_audio(duration=5)
-        
         # Transcribe
         with st.spinner("Transcribing audio..."):
             transcript = self.transcribe_audio(audio_data)
