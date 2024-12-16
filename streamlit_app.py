@@ -4,6 +4,7 @@ import sys
 sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
 
 import streamlit as st
+from crewai import  LLM
 
 st.set_page_config(
         page_title="Welcome to My App",
