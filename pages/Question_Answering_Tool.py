@@ -167,7 +167,6 @@ def setup_qa_crew(question, context, llm, sources):
 
 # Streamlit interface setup
 st.title("📚 Personalized Learning Chat Assistant")
-audio = audiorecorder("Click to record", "Click to stop recording")
 
 if "messages" not in st.session_state:
     st.session_state.messages = []  # Initialize message history
@@ -186,9 +185,9 @@ with bottom():
     prompt = None
 # Button stays in the smaller column
     with cols[1]:
+        audio = audiorecorder("Click to record", "Click to stop recording")
         # if st.button("🎤"):
         with spinner_placeholder:
-            audio = audiorecorder("Click to record", "Click to stop recording")
             voice_query = voice_input_handler.process_voice_query(audio)
 
             if voice_query:
