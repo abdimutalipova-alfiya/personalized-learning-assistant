@@ -17,4 +17,5 @@ streamlit-extras
 speechrecognition
 soundfile
 streamlit-audiorecorder
+ffprobe
 
