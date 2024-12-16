@@ -18,4 +18,5 @@ speechrecognition
 sounddevice
 soundfile
 streamlit-audiorecorder
+audiorecorder
 
