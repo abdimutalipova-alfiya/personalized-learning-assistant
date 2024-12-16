@@ -7,7 +7,7 @@ import numpy as np
 import requests
 from streamlit_extras.bottom_container import bottom 
 from document_processor import DocumentProcessor
-from streamlit_app import configure_llm
+from Home import configure_llm
 from audiorecorder import audiorecorder
 
 st.set_page_config(page_title="Question-Answer Tool", page_icon="📈")

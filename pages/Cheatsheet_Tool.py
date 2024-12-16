@@ -6,7 +6,7 @@ import numpy as np
 from PyPDF2 import PdfReader  # Ensure PyPDF2 is installed
 from docx import Document  # To handle DOCX files
 from io import BytesIO
-from streamlit_app import configure_llm
+from Home import configure_llm
 from crewai import Crew, Task, Agent, LLM
 st.set_page_config(page_title="Cheat Sheet Tool", page_icon="📊")
 
