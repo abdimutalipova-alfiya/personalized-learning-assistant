@@ -6,9 +6,32 @@ import numpy as np
 from PyPDF2 import PdfReader  # Ensure PyPDF2 is installed
 from docx import Document  # To handle DOCX files
 from io import BytesIO
+from streamlit_app import configure_llm
+
 
 st.set_page_config(page_title="Cheat Sheet Tool", page_icon="📊")
+selected_llm = st.sidebar.selectbox(
+    "Select LLM", 
+    ["Groq API", "Gemini"],
+    help="Choose the Language Model for your queries"
+)
 
+
+if "uploaded_files_cheatsheet" not in st.session_state:
+    st.session_state["uploaded_files_cheatsheet"] = None
+if "selected_llm" not in st.session_state:
+    st.session_state["selected_llm"] = "Groq API"
+if "llm" not in st.session_state:
+    st.session_state["llm"] = None
+
+st.session_state["selected_llm"] = selected_llm
+st.session_state["llm"] = configure_llm(st.session_state["selected_llm"])
+
+uploaded_files_cheatsheet = st.sidebar.file_uploader("Upload PDFs to Generate Cheatsheet", accept_multiple_files=True, type="pdf")
+if uploaded_files_cheatsheet:
+    with st.spinner("Processing documents..."):
+        st.session_state["uploaded_files_cheatsheet"]=uploaded_files_cheatsheet
+        st.sidebar.success("Documents processed successfully!")
 os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 
 # Load the tokenizer and model for embeddings (once)

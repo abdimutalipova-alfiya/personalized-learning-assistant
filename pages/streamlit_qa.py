@@ -16,8 +16,6 @@ st.sidebar.header("Question-Answer Tool")
 # Initialize session_state keys if not present
 if "faiss_indexes" not in st.session_state:
     st.session_state["faiss_indexes"] = None
-if "uploaded_files_cheatsheet" not in st.session_state:
-    st.session_state["uploaded_files_cheatsheet"] = None
 if "documents" not in st.session_state:
     st.session_state["documents"] = None
 if "document_sources" not in st.session_state:
@@ -34,6 +32,14 @@ selected_llm = st.sidebar.selectbox(
 )
 st.session_state["selected_llm"] = selected_llm
 st.session_state["llm"] = configure_llm(st.session_state["selected_llm"])
+
+def process_query(query):
+    """
+    This function will be called when a voice query is transcribed
+    It should add the query to your messages and trigger a rerun
+    """
+    st.session_state.messages.append({"role": "user", "content": query})
+    st.rerun()
 
     # Upload PDFs and YouTube links
 uploaded_files = st.sidebar.file_uploader("Upload PDFs", accept_multiple_files=True, type="pdf", key="uploaded_files")
