@@ -17,5 +17,5 @@ streamlit-extras
 speechrecognition
 sounddevice
 soundfile
-
+pysqlite3-binary
 
