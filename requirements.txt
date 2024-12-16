@@ -15,8 +15,6 @@ PyPDF2
 python-docx
 streamlit-extras
 speechrecognition
-sounddevice
 soundfile
 streamlit-audiorecorder
-audiorecorder
 
