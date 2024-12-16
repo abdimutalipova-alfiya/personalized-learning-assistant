@@ -9,6 +9,12 @@ from io import BytesIO
 from streamlit_app import configure_llm
 from crewai import Crew, Task, Agent, LLM
 
+# Ensure environment variables are set
+groq_api_key = st.secrets["GROQ_API_KEY"]
+serp_api_key = st.secrets["SERPAPI_API_KEY"]
+hf_token = st.secrets["HUGGINGFACEHUB_API_TOKEN"] # For huggingface models
+gemini_api_key = st.secrets["GEMINI_API_KEY"]
+
 
 st.set_page_config(page_title="Cheat Sheet Tool", page_icon="📊")
 selected_llm = st.sidebar.selectbox(
@@ -16,7 +22,6 @@ selected_llm = st.sidebar.selectbox(
     ["Groq API", "Gemini"],
     help="Choose the Language Model for your queries"
 )
-
 
 if "uploaded_files_cheatsheet" not in st.session_state:
     st.session_state["uploaded_files_cheatsheet"] = None

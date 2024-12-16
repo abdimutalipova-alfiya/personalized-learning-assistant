@@ -9,6 +9,12 @@ from streamlit_extras.bottom_container import bottom
 from document_processor import DocumentProcessor
 from streamlit_app import configure_llm
 
+# Ensure environment variables are set
+groq_api_key = st.secrets["GROQ_API_KEY"]
+serp_api_key = st.secrets["SERPAPI_API_KEY"]
+hf_token = st.secrets["HUGGINGFACEHUB_API_TOKEN"] # For huggingface models
+gemini_api_key = st.secrets["GEMINI_API_KEY"]
+
 
 st.set_page_config(page_title="Question-Answer Tool", page_icon="📈")
 st.sidebar.header("Question-Answer Tool")
