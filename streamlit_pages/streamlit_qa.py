@@ -24,7 +24,7 @@ def fetch_general_references(question):
     Returns:
         list: A list of reference links or an error message.
     """
-    serp_api_key = os.getenv("SERPAPI_API_KEY")  # Ensure SerpAPI key is set
+    serp_api_key = st.secrets["SERPAPI_API_KEY"] # Ensure SerpAPI key is set
     if not serp_api_key:
         return ["SerpAPI key not found. Please set SERPAPI_API_KEY environment variable."]
 

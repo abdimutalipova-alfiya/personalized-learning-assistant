@@ -13,10 +13,10 @@ def process_query(query):
 
 
 # Ensure environment variables are set
-groq_api_key = os.getenv("GROQ_API_KEY")
-serp_api_key = os.getenv("SERPAPI_API_KEY")
-hf_token = os.getenv("HUGGINGFACEHUB_API_TOKEN")  # For huggingface models
-gemini_api_key = os.getenv("GEMINI_API_KEY")
+groq_api_key = st.secrets["GROQ_API_KEY"]
+serp_api_key = st.secrets["SERPAPI_API_KEY"]
+hf_token = st.secrets["HUGGINGFACEHUB_API_TOKEN"] # For huggingface models
+gemini_api_key = st.secrets["GEMINI_API_KEY"]
 
 
 
