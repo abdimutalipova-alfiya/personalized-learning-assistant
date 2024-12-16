@@ -7,6 +7,8 @@ from PyPDF2 import PdfReader  # Ensure PyPDF2 is installed
 from docx import Document  # To handle DOCX files
 from io import BytesIO
 
+st.set_page_config(page_title="Cheat Sheet Tool", page_icon="📊")
+
 os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 
 # Load the tokenizer and model for embeddings (once)

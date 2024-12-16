@@ -1,11 +1,11 @@
 import streamlit as st
 
-# st.set_page_config(
-#         page_title="Welcome to My App",
-#         page_icon="🌟",
-#         layout="centered",
-#         initial_sidebar_state="collapsed"
-#     )
+st.set_page_config(
+        page_title="Welcome to My App",
+        page_icon="🌟",
+        layout="centered",
+        initial_sidebar_state="collapsed"
+    )
 
     # Entry page content
 st.title("🌟 Welcome to Personalized Learning Assistant")

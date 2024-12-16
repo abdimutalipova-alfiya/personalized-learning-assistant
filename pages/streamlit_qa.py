@@ -6,6 +6,48 @@ import torch
 import numpy as np
 import requests
 from streamlit_extras.bottom_container import bottom 
+from document_processor import DocumentProcessor
+from streamlit_app import configure_llm
+
+
+st.set_page_config(page_title="Question-Answer Tool", page_icon="📈")
+st.sidebar.header("Question-Answer Tool")
+
+# Initialize session_state keys if not present
+if "faiss_indexes" not in st.session_state:
+    st.session_state["faiss_indexes"] = None
+if "uploaded_files_cheatsheet" not in st.session_state:
+    st.session_state["uploaded_files_cheatsheet"] = None
+if "documents" not in st.session_state:
+    st.session_state["documents"] = None
+if "document_sources" not in st.session_state:
+    st.session_state["document_sources"] = None
+if "selected_llm" not in st.session_state:
+    st.session_state["selected_llm"] = "Groq API"
+if "llm" not in st.session_state:
+    st.session_state["llm"] = None
+
+selected_llm = st.sidebar.selectbox(
+    "Select LLM", 
+    ["Groq API", "Gemini"],
+    help="Choose the Language Model for your queries"
+)
+st.session_state["selected_llm"] = selected_llm
+st.session_state["llm"] = configure_llm(st.session_state["selected_llm"])
+
+    # Upload PDFs and YouTube links
+uploaded_files = st.sidebar.file_uploader("Upload PDFs", accept_multiple_files=True, type="pdf", key="uploaded_files")
+youtube_links = st.sidebar.text_area("Enter YouTube Links (comma separated)")
+# Handle voice input
+if uploaded_files or youtube_links:
+    with st.spinner("Processing documents and YouTube links..."):
+        youtube_links = youtube_links.split(",") if youtube_links else []
+        faiss_indexes, documents, document_sources = DocumentProcessor.chunk_and_embed_documents(uploaded_files, youtube_links)
+        st.session_state["faiss_indexes"] = faiss_indexes
+        st.session_state["documents"] = documents
+        st.session_state["document_sources"] = document_sources
+        st.sidebar.success("Documents and YouTube links processed successfully!")
+
 
 # Load the tokenizer and model for generating embeddings (used for matching queries with documents)
 tokenizer = AutoTokenizer.from_pretrained("sentence-transformers/all-MiniLM-L6-v2")
