@@ -5,33 +5,44 @@ from transformers import AutoTokenizer, AutoModel
 import torch
 import numpy as np
 import requests
-os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
-# Load the tokenizer and model for embeddings (should be done once)
+from streamlit_extras.bottom_container import bottom 
+
+# Load the tokenizer and model for generating embeddings (used for matching queries with documents)
 tokenizer = AutoTokenizer.from_pretrained("sentence-transformers/all-MiniLM-L6-v2")
 model = AutoModel.from_pretrained("sentence-transformers/all-MiniLM-L6-v2")
 
+from voice_input_handler import VoiceInputHandler
+
+# Initialize the voice input handler for processing voice queries
+voice_input_handler = VoiceInputHandler()
+
 def fetch_general_references(question):
     """
-    Fetch references for general knowledge questions using SerpAPI.
-    Returns a list of reference links.
+    Fetch general references for a question using SerpAPI.
+    Args:
+        question (str): The user's query.
+    Returns:
+        list: A list of reference links or an error message.
     """
-    serp_api_key = os.getenv("SERPAPI_API_KEY")  # Ensure this environment variable is set
+    serp_api_key = os.getenv("SERPAPI_API_KEY")  # Ensure SerpAPI key is set
     if not serp_api_key:
         return ["SerpAPI key not found. Please set SERPAPI_API_KEY environment variable."]
-    
-    search_url = "https://serpapi.com/search"
+
+    # Parameters for the SerpAPI search request
     params = {
-        "q": question,
-        "hl": "en",
-        "gl": "us",
-        "num": 3,  # Limit to 3 references
+        "q": question,  # User's query
+        "hl": "en",    # Language preference
+        "gl": "us",   # Country preference
+        "num": 3,       # Limit to 3 references
         "api_key": serp_api_key
     }
 
     try:
-        response = requests.get(search_url, params=params)
+        # Send the request to SerpAPI
+        response = requests.get("https://serpapi.com/search", params=params)
         response.raise_for_status()
         search_results = response.json()
+        # Extract links from the search results
         references = [
             result["link"] for result in search_results.get("organic_results", [])
             if "link" in result
@@ -40,151 +51,141 @@ def fetch_general_references(question):
     except Exception as e:
         return [f"Error fetching references: {e}"]
 
-def chunk_text_by_sentences(text, max_length=1000):
-    sentences = text.split('.')
-    chunks = []
-    current_chunk = []
-    current_length = 0
-    for sentence in sentences:
-        if current_length + len(sentence) <= max_length:
-            current_chunk.append(sentence)
-            current_length += len(sentence)
-        else:
-            chunks.append(" ".join(current_chunk))
-            current_chunk = [sentence]
-            current_length = len(sentence)
-    if current_chunk:
-        chunks.append(" ".join(current_chunk))
-    return chunks
-
 def generate_embeddings(text, tokenizer, model):
+    """
+    Generate embeddings for a given text using the transformer model.
+    Args:
+        text (str): Input text.
+    Returns:
+        np.ndarray: Embedding vector.
+    """
     inputs = tokenizer(text, return_tensors="pt", truncation=True, padding=True, max_length=1000)
     with torch.no_grad():
         output = model(**inputs)
-        embeddings = output.last_hidden_state.mean(dim=1).numpy()
+        embeddings = output.last_hidden_state.mean(dim=1).numpy()  # Average the embeddings
     return embeddings
 
 def setup_qa_crew(question, context, llm, sources):
-    # If context is empty or very short, create a more general agent
+    """
+    Configure the agents and tasks for answering a question.
+    Args:
+        question (str): The user's query.
+        context (str): Relevant document context.
+        llm (LLM): Language model.
+        sources (list): References.
+    Returns:
+        dict: The generated answer and references.
+    """
     if not context or len(context.strip()) < 50:
         qa_agent = Agent(
-            role="Knowledgeable General Assistant",
-            goal="Provide comprehensive and helpful answers to user questions using general knowledge.",
-            backstory="You are an AI assistant capable of answering a wide range of questions using your broad knowledge base.",
+            role="General Knowledge Assistant",
+            goal="Answer user queries using general knowledge.",
+            backstory="An AI assistant answering questions without document context.",
             verbose=True,
             llm=llm
         )
-
-        
-
         qa_task = Task(
-            description=f"Answer the user's question: '{question}' comprehensively and helpfully.",
+            description=f"Answer the question: '{question}'.",
             agent=qa_agent,
-            expected_output="A detailed, informative answer drawing from general knowledge with a reference to the knowledge base used (e.g., 'LLM Model XYZ')"
+            expected_output="A detailed and helpful answer."
         )
-
-          # Fetch general references using SerpAPI
         general_references = fetch_general_references(question)
-
-        crew = Crew(
-            agents=[qa_agent],
-            tasks=[qa_task],
-            verbose=True
-        )
+        crew = Crew(agents=[qa_agent], tasks=[qa_task], verbose=True)
         crew_result = crew.kickoff()
-
-        return {
-            "answer": crew_result.raw,
-            "references": general_references
-        }
-    
+        return {"answer": crew_result.raw, "references": general_references}
     else:
-        # Original implementation for document-based queries
         qa_agent = Agent(
-            role="Knowledge Assistant",
-            goal=f"Provide comprehensive and contextually relevant answers to the user's question: '{question}'.",
-            backstory="You are a highly knowledgeable assistant trained to retrieve and synthesize information from provided documents.",
+            role="Document Knowledge Assistant",
+            goal="Answer user queries using provided document context.",
+            backstory="An AI assistant trained to extract answers from documents.",
             verbose=True,
             llm=llm
         )
-
         qa_task = Task(
-            description=f"Extract and provide relevant information for: '{question}'. Use the following context: {context}",
+            description=f"Use the following context to answer '{question}': {context}",
             agent=qa_agent,
-            expected_output=f"Detailed answer with references to sources: {sources}"
+            expected_output="A detailed answer with references."
         )
-    crew = Crew(
-        agents=[qa_agent],
-        tasks=[qa_task],
-        verbose=True
-    )
+        crew = Crew(agents=[qa_agent], tasks=[qa_task], verbose=True)
+        crew_result = crew.kickoff()
+        return {"answer": crew_result.raw, "references": sources}
 
-    crew_result = crew.kickoff()
-    
-    return {
-            "answer": crew_result.raw,
-            "references": sources
-        }
-
-
+# Streamlit interface setup
 st.title("📚 Personalized Learning Chat Assistant")
 
 if "messages" not in st.session_state:
-    st.session_state.messages = []
+    st.session_state.messages = []  # Initialize message history
+
+if "document_sources" not in st.session_state:
+    st.session_state["document_sources"] = []
 
 for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
 
-# Ask user to enter a question
-prompt = st.chat_input("Ask a question:")
+spinner_placeholder = st.empty()
+with bottom():
+
+    cols = st.columns([6, 1])  # Divide layout into two columns
+    prompt = None
+# Button stays in the smaller column
+    with cols[1]:
+        if st.button("🎤"):
+            with spinner_placeholder:
+                voice_query = voice_input_handler.process_voice_query()
+                if voice_query:
+                    prompt = voice_query  # Set voice query as prompt
+
+# Input field in the larger column
+        with cols[0]:
+            text_input = st.chat_input("Ask a question:", key="input-css")
+            if text_input:
+                prompt = text_input  # Set manual input as prompt
+
 if prompt:
+    spinner_placeholder.empty()
     st.session_state.messages.append({"role": "user", "content": prompt})
+
     with st.chat_message("user"):
         st.markdown(prompt)
 
-if prompt:
     with st.spinner("Generating answer..."):
-        if (st.session_state.get("faiss_indexes") and 
-            st.session_state["faiss_indexes"] is not None and
-            len(st.session_state["faiss_indexes"]) > 0 and
-            st.session_state.get("documents") and
-            st.session_state["documents"] is not None and
-            len(st.session_state["documents"]) > 0):
+        context = ""
+        sources = []
 
-            # If documents are available, proceed with document-based QA
+        # Document-based retrieval
+        if (st.session_state.get("faiss_indexes") and st.session_state.get("documents")):
             query_embedding = generate_embeddings(prompt, tokenizer, model)
-            # Retrieve top relevant chunks
             k = 5
             faiss_index = st.session_state["faiss_indexes"][0]
             distances, indices = faiss_index.search(np.array(query_embedding, dtype=np.float32), k)
 
-            relevant_chunks = [st.session_state["documents"][0][i] for i in indices[0]]
-            relevant_sources = [st.session_state["document_sources"][0][i] for i in indices[0]]
+            relevant_chunks = []
+            relevant_sources = []
 
-            # Deduplicate references
+            for i in indices[0]:
+                if i < len(st.session_state["documents"][0]):
+                    relevant_chunks.append(st.session_state["documents"][0][i])
+                    relevant_sources.append(st.session_state["document_sources"][0])
+
             unique_sources = list(set(relevant_sources))
             context = " ".join(relevant_chunks)
+            sources = unique_sources
 
-            with st.chat_message("assistant"):
-                # Run the QA crew to get final answer
-                result = setup_qa_crew(prompt, context, st.session_state["llm"], unique_sources)
-                answer = result["answer"]
-                references = result["references"]
-                st.write(f"**Answer:** {answer}")
-                st.write(f"**References:** {', '.join(references)}")
-                st.session_state.messages.append({"role": "assistant", "content": f"{answer}\n\nReferences: {', '.join(references)}"})
-        else:
-            # If no documents are available, answer the question using general knowledge
-            context = ""
-            sources = []
-            with st.chat_message("assistant"):
-                result = setup_qa_crew(prompt, context, st.session_state["llm"], sources)
-                answer = result["answer"]
-                references = result["references"]
-                st.write(f"**Answer:** {answer}")
-                st.write("**References:**")
-                for ref in references:
-                    st.markdown(f"- [{ref}]({ref})")
-                st.session_state.messages.append({"role": "assistant", "content": f"{answer}\n\nReferences:\n" + "\n".join(references)})
-                
+        # General fallback
+        if not context.strip():
+            sources = fetch_general_references(prompt)
+
+        # Generate answer
+        result = setup_qa_crew(prompt, context, st.session_state.get("llm"), sources)
+        answer = result["answer"]
+        references = result["references"]
+
+        # Append assistant response
+        references_markdown = "\n".join(["- " + ref for ref in references])
+        st.session_state.messages.append({
+            "role": "assistant",
+            "content": f"{answer}\n\n**References:**\n{references_markdown}"
+        })
+
+    st.rerun()

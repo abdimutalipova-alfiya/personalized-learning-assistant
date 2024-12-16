@@ -10,3 +10,12 @@ google-generativeai
 litellm
 youtube-transcript-api
 pysqlite3-binary
+numpy
+PyPDF2
+python-docx
+streamlit-extras
+speechrecognition
+sounddevice
+soundfile
+
+
