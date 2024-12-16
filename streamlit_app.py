@@ -9,9 +9,7 @@ from crewai import LLM
 st.set_page_config(
         page_title="Welcome to My App",
         page_icon="🌟",
-        layout="centered",
-        initial_sidebar_state="collapsed"
-    )
+        layout="centered"    )
 
     # Entry page content
 st.title("🌟 Welcome to Personalized Learning Assistant")

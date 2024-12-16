@@ -8,6 +8,7 @@ from docx import Document  # To handle DOCX files
 from io import BytesIO
 from streamlit_app import configure_llm
 from crewai import Crew, Task, Agent, LLM
+st.set_page_config(page_title="Cheat Sheet Tool", page_icon="📊")
 
 # Ensure environment variables are set
 groq_api_key = st.secrets["GROQ_API_KEY"]
@@ -16,7 +17,6 @@ hf_token = st.secrets["HUGGINGFACEHUB_API_TOKEN"] # For huggingface models
 gemini_api_key = st.secrets["GEMINI_API_KEY"]
 
 
-st.set_page_config(page_title="Cheat Sheet Tool", page_icon="📊")
 selected_llm = st.sidebar.selectbox(
     "Select LLM", 
     ["Groq API", "Gemini"],
