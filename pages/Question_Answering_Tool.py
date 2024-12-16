@@ -8,7 +8,8 @@ import requests
 from streamlit_extras.bottom_container import bottom 
 from document_processor import DocumentProcessor
 from Home import configure_llm
-from audiorecorder import audiorecorder
+from audio_recorder_streamlit import audio_recorder
+
 
 st.set_page_config(page_title="Question-Answer Tool", page_icon="📈")
 st.sidebar.header("Question-Answer Tool")
@@ -185,7 +186,7 @@ with bottom():
     prompt = None
 # Button stays in the smaller column
     with cols[1]:
-        audio = audiorecorder("Click to record", "Click to stop recording")
+        audio=audio_recorder()
         # if st.button("🎤"):
         with spinner_placeholder:
             voice_query = voice_input_handler.process_voice_query(audio)

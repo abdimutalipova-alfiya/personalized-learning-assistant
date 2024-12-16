@@ -16,6 +16,4 @@ python-docx
 streamlit-extras
 speechrecognition
 soundfile
-streamlit-audiorecorder
-ffprobe
-
+audio-recorder-streamlit
