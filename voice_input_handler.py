@@ -3,7 +3,6 @@ import speech_recognition as sr
 import torch
 import io
 import numpy as np
-import sounddevice as sd
 import soundfile as sf
 from transformers import Wav2Vec2ForCTC, Wav2Vec2Processor
 
