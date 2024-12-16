@@ -167,6 +167,7 @@ def setup_qa_crew(question, context, llm, sources):
 
 # Streamlit interface setup
 st.title("📚 Personalized Learning Chat Assistant")
+audio = audiorecorder("Click to record", "Click to stop recording")
 
 if "messages" not in st.session_state:
     st.session_state.messages = []  # Initialize message history
