@@ -187,12 +187,11 @@ with bottom():
 # Button stays in the smaller column
     with cols[1]:
         if st.button("🎤 Record"):
-
             audio = audio_recorder(
-        sample_rate=16000,
-        text="",
-        icon_name="microphone",
-        icon_size="2x")
+            sample_rate=16000,
+            text="",
+            icon_name="microphone",
+            icon_size="2x")
             if audio:
                 audio_data = np.frombuffer(audio, dtype=np.int16)
                 voice_query = voice_input_handler.process_voice_query(audio_data)
