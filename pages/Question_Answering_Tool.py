@@ -187,11 +187,12 @@ with bottom():
 # Button stays in the smaller column
     with cols[1]:
         # if st.button("🎤"):
-        with spinner_placeholder:
-            audio=audio_recorder(sample_rate=16000)
+        audio = audio_recorder(sample_rate=16000)
+        if audio:
+            st.audio(audio, format="audio/wav")
             voice_query = voice_input_handler.process_voice_query(audio)
             if voice_query:
-                prompt = voice_query  # Set voice query as prompt
+                st.write("Transcription:", voice_query)
 
 # Input field in the larger column
         with cols[0]:
