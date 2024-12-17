@@ -11,26 +11,22 @@ class VoiceInputHandler:
         # Initialize Speech Recognition
         self.recognizer = sr.Recognizer()
         
-    def transcribe_audio(self, wav_file):
-        """
-        Transcribe audio using multiple methods for robustness.
-        """
-
-        # Method 1: SpeechRecognition (Google)
+    def transcribe_audio(self, audio_data):
         try:
+            wav_file = io.BytesIO(audio_data)
             with sr.AudioFile(wav_file) as source:
-                audio_data = self.recognizer.record(source)
-                google_transcript = self.recognizer.recognize_google(audio_data)
-                if google_transcript:
-                    return google_transcript
+                audio = self.recognizer.record(source)
+                transcript = self.recognizer.recognize_google(audio)
+                return transcript
         except Exception as e:
-            st.warning(f"Google Speech Recognition failed: {e}")
-
+            st.warning(f"Transcription failed: {e}")
+            return None
+        
     def process_voice_query(self, audio_data):
-        # Transcribe
-        with st.spinner("Transcribing audio..."):
-            transcript = self.transcribe_audio(audio_data)
-
-        return transcript
+        if audio_data is not None:
+            with st.spinner("Transcribing audio..."):
+                transcript = self.transcribe_audio(audio_data)
+            return transcript
+        return None
         
 

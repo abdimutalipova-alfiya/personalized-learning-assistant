@@ -186,11 +186,10 @@ with bottom():
     prompt = None
 # Button stays in the smaller column
     with cols[1]:
-        audio=audio_recorder(sample_rate=16000)
         # if st.button("🎤"):
         with spinner_placeholder:
+            audio=audio_recorder(sample_rate=16000)
             voice_query = voice_input_handler.process_voice_query(audio)
-
             if voice_query:
                 prompt = voice_query  # Set voice query as prompt
 
