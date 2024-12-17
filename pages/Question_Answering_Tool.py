@@ -193,7 +193,7 @@ with bottom():
         recording_color="#e8b62c",
         neutral_color="#6aa36f",
         icon_name="mic",
-        icon_size="2x"
+        icon_size="3x"
     )
         if audio:
             st.audio(audio, format="audio/wav")
