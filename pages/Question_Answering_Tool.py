@@ -190,6 +190,8 @@ with bottom():
         audio = audio_recorder(sample_rate=16000)
         if audio:
             st.audio(audio, format="audio/wav")
+            st.write(f"Audio data size: {len(audio)} bytes")
+
             voice_query = voice_input_handler.process_voice_query(audio)
             if voice_query:
                 prompt = voice_query
