@@ -186,16 +186,18 @@ with bottom():
     prompt = None
 # Button stays in the smaller column
     with cols[1]:
-        audio = audio_recorder(
+        if st.button("🎤 Record"):
+
+            audio = audio_recorder(
         sample_rate=16000,
         text="",
         icon_name="microphone",
         icon_size="2x")
-        if audio:
-            audio_data = np.frombuffer(audio, dtype=np.int16)
-            voice_query = voice_input_handler.process_voice_query(audio_data)
-            if voice_query:
-                prompt = voice_query
+            if audio:
+                audio_data = np.frombuffer(audio, dtype=np.int16)
+                voice_query = voice_input_handler.process_voice_query(audio_data)
+                if voice_query:
+                    prompt = voice_query
 
 # Input field in the larger column
         with cols[0]:
