@@ -192,7 +192,7 @@ with bottom():
             st.audio(audio, format="audio/wav")
             voice_query = voice_input_handler.process_voice_query(audio)
             if voice_query:
-                st.write("Transcription:", voice_query)
+                prompt = voice_query
 
 # Input field in the larger column
         with cols[0]:
