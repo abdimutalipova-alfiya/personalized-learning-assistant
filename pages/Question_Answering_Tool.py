@@ -186,8 +186,6 @@ with bottom():
     prompt = None
 # Button stays in the smaller column
     with cols[1]:
-        # if st.button("🎤"):
-        # audio = audio_recorder(sample_rate=16000)
         audio = audio_recorder(
         sample_rate=16000,
         text="",

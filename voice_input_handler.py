@@ -60,8 +60,7 @@ class VoiceInputHandler:
         return ""
             
     def process_voice_query(self, audio_data):
-        with st.spinner("Transcribing audio..."):
-            transcript = self.transcribe_audio(audio_data)
+        transcript = self.transcribe_audio(audio_data)
         return transcript
         
 
