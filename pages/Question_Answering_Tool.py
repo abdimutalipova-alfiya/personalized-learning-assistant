@@ -192,10 +192,8 @@ with bottom():
         sample_rate=16000,
         text="",
         icon_name="microphone",
-        icon_size="2x"
-    )
+        icon_size="2x")
         if audio:
-            st.audio(audio, format="audio/wav")
             audio_data = np.frombuffer(audio, dtype=np.int16)
             voice_query = voice_input_handler.process_voice_query(audio_data)
             if voice_query:
