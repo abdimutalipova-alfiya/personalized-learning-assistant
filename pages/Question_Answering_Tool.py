@@ -191,8 +191,8 @@ with bottom():
         if audio:
             st.audio(audio, format="audio/wav")
             st.write(f"Audio data size: {len(audio)} bytes")
-
-            voice_query = voice_input_handler.process_voice_query(audio)
+            audio_data = np.frombuffer(audio, dtype=np.int16)
+            voice_query = voice_input_handler.process_voice_query(audio_data)
             if voice_query:
                 prompt = voice_query
 
