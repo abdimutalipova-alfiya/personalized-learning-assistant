@@ -191,8 +191,6 @@ with bottom():
         audio = audio_recorder(
         sample_rate=16000,
         text="",
-        recording_color="#e8b62c",
-        neutral_color="#6aa36f",
         icon_name="microphone",
         icon_size="2x"
     )
