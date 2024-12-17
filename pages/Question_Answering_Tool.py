@@ -179,6 +179,9 @@ for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
 
+if "is_recording" not in st.session_state:
+    st.session_state.is_recording = False
+
 spinner_placeholder = st.empty()
 with bottom():
 
@@ -187,6 +190,18 @@ with bottom():
 # Button stays in the smaller column
     with cols[1]:
         if st.button("🎤"):
+            st.session_state.is_recording = not st.session_state.is_recording
+
+        if st.session_state.is_recording:
+            st.write("Recording in progress...")
+        # Call the audio recorder only when recording is active
+            audio = audio_recorder(
+            sample_rate=16000,
+            text="Speak now...",
+            icon_name="microphone",
+            icon_size="2x"
+        )
+
             audio = audio_recorder(
             sample_rate=16000,
             text="",
