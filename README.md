@@ -1,8 +1,17 @@
-# 🎈 Blank app template
+# 🎈 Personalized Learning Assistant 
 
-A simple Streamlit app template for you to modify!
+An advanced AI learning assistant that leverages NLP techniques to answer queries, summarize course material, and generate quizzes using Retrieval-Augmented Generation (RAG) architecture with multiple LLM integrations.
 
-[![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://blank-app-template.streamlit.app/)
+## 🌟 Key Features
+
+- **Multi-source content ingestion** (PDFs, YouTube transcripts)
+- **Voice interaction** with dual transcription (Google STT & Wav2Vec2)
+- **Multi-LLM integration** (Google Gemini, Groq's Llama 3)
+- **Context-aware responses** using FAISS vector search
+- **Reference tracking** for all generated answers
+- **Cheat sheet generator** for quick document summarization
+- **Streamlit-based** user-friendly interface
+  
 
 ### How to run it on your own machine
 
@@ -15,5 +24,5 @@ A simple Streamlit app template for you to modify!
 2. Run the app
 
    ```
-   $ streamlit run streamlit_app.py
+   $ streamlit run Home.py
    ```
